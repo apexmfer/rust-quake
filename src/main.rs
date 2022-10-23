@@ -41,7 +41,8 @@ use hal::format::AsFormat as _;
 
 fn main() {
     env_logger::init_from_env("QUAKE_LOG");
-    let pak = Rc::new(pak::PackFile::new("id1/PAK0.PAK").unwrap());
+    let filename:&str = "id1/pak0.pak";
+    let pak = Rc::new(pak::PackFile::new(filename).expect("Unable to load pak0"));
 
     let wb = winit::WindowBuilder::new()
         .with_dimensions(winit::dpi::LogicalSize::new(
