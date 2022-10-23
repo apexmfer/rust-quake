@@ -18,6 +18,11 @@ extern crate gfx_hal as hal;
 extern crate winit;
 extern crate env_logger;
 
+ use winit::{
+    event_loop::EventLoop,
+       window::Window,
+};
+
 #[macro_use]
 mod parse;
 pub mod pak;
@@ -44,22 +49,24 @@ fn main() {
     let filename:&str = "id1/pak0.pak";
     let pak = Rc::new(pak::PackFile::new(filename).expect("Unable to load pak0"));
 
-    let wb = winit::WindowBuilder::new()
-        .with_dimensions(winit::dpi::LogicalSize::new(
+   /*  let wb = winit::window::WindowBuilder::new()
+        .with_inner_size(winit::dpi::LogicalSize::new(
             WIDTH as _,
             HEIGHT as _,
         ))
-        .with_title("RQuake");
+        .with_title("RQuake"); */
 
-    let mut events_loop = winit::EventsLoop::new();
+    let mut events_loop = EventLoop::new();
+ 
+   
 
     #[cfg(not(feature = "gl"))]
     let (window, _instance, mut adapters, surface, size) = {
-        let window = wb.build(&events_loop).unwrap();
+        let window = Window::new(&events_loop).unwrap();
         let instance = back::Instance::create("RQuake", 1);
         let surface = instance.create_surface(&window);
         let adapters = instance.enumerate_adapters();
-        let size = window.get_inner_size().map(Into::into).unwrap_or((WIDTH as f64, HEIGHT as f64));
+        let size = window.inner_size().map(Into::into).unwrap_or((WIDTH as f64, HEIGHT as f64));
         (window, instance, adapters, surface, size)
     };
     #[cfg(feature = "gl")]
@@ -70,7 +77,7 @@ fn main() {
                     .with_vsync(true);
             builder.build_windowed(wb, &events_loop).unwrap()
         };
-        let size = window.get_inner_size().map(Into::into).unwrap_or((WIDTH as f64, HEIGHT as f64));
+        let size = window.inner_size().map(Into::into).unwrap_or((WIDTH as f64, HEIGHT as f64));
 
         let surface = back::Surface::from_window(window);
         let adapters = surface.enumerate_adapters();
@@ -105,8 +112,18 @@ fn main() {
         let delta =
             (diff.as_secs() * 1_000_000_000 + diff.subsec_nanos() as u64) as f32 / (1_000_000_000.0 / 60.0);
 
+
+            ///FIX POLL EVENTS 
+
+        /*  
         events_loop.poll_events(|event| {
-            use winit::{Event, WindowEvent, VirtualKeyCode, ElementState, MouseButton};
+
+            use winit::{
+                    event::{Event, WindowEvent,MouseButton,VirtualKeyCode,ElementState},
+                       
+            };
+              
+          //  use winit::{Event, WindowEvent, VirtualKeyCode, ElementState, MouseButton};
 
             #[cfg(feature = "gl")]
             let window = renderer.surface.window().window();
@@ -162,6 +179,9 @@ fn main() {
                 _ => {},
             }
         });
+*/
+
+
 
         if moving_forward {
             renderer.camera.x += 5.0 * renderer.camera.rot_y.0.sin() * delta;
